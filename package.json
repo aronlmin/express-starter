@@ -1,0 +1,21 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "/src/index.js",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "dotenv": "^8.0.0",
+    "express": "^4.17.0",
+    "express-validator": "^5.3.1",
+    "http": "^0.0.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "run": "node ./src/index.js",
+    "nodemon": "nodemon ./src/index.js",
+    "build": "npm install",
+    "dev": "nodemon ./src/index.js"
+  }
+}
