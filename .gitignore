@@ -1,2 +1,4 @@
 /Golf2.0.paw
-.env.production
+/.env.production
+/yarn.lock
+/node_modules
