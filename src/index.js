@@ -8,10 +8,23 @@ const app = express()
 const server = require('http').Server(app)
 const bodyParser = require('body-parser')
 const cors = require('cors')
+const mongoose = require('mongoose')
+const morgan = require('morgan')
 
+app.use(morgan('combined'))
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
+
+// DATABASE
+const uri = `mongodb://localhost:27017/${process.env.DBNAME}`
+const options = {
+  useCreateIndex: true,
+  useNewUrlParser: true
+}
+mongoose.connect(uri, options)
+if (!isProduction) mongoose.set('debug', true)
+require('./models/User')
 
 // require routes
 app.use('/', require('./routes'))
