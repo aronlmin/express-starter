@@ -50,7 +50,7 @@ UserSchema.methods.entity = function (self, zoom = '') {
     firstName: this.firstName,
     lastName: this.lastName,
     fullName: `${this.firstName} ${this.lastName}`.trim(),
-    _embedded: this.zoom(this, zoom)
+    _embeds: this.zoom(this, zoom)
   }
 }
 
