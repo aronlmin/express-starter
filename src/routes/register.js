@@ -1,3 +1,5 @@
+'use strict'
+
 const express = require('express')
 const router = express.Router()
 const present = require('../lib/present')
@@ -32,7 +34,7 @@ router.post('/', [
   query('zoom')
     .optional()
     .isString()
-], (req, res, next) => {
+], (req, res) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) })

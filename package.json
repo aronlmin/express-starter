@@ -22,6 +22,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "run": "node ./src/index.js",
     "nodemon": "nodemon ./src/index.js",
+    "start": "nodemon ./src/index.js",
     "build": "npm install",
     "dev": "nodemon ./src/index.js"
   }

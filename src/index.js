@@ -1,3 +1,5 @@
+'use strict'
+
 const isProduction = require('./lib/isProduction')
 
 if (isProduction) require('dotenv').config({ path: './.env.production' })
