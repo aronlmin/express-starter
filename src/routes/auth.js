@@ -8,6 +8,7 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const mongoose = require('mongoose')
 const User = mongoose.model('User')
+const logger = require('../lib/logger')
 
 router.post('/', [
   body('email')
@@ -26,10 +27,11 @@ router.post('/', [
 ], (req, res) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
-    console.error(errors)
+    logger.log('warn', `** failed login with validation errors`)
+    logger.log('warn', `** error ${errors}`)
+    logger.log('warn', `** rejected request with 422`)
     return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) })
   }
-
   let { email, password, rememberMe } = req.body
   let { zoom } = req.query
 
@@ -39,6 +41,8 @@ router.post('/', [
       // return error if the user is not active
       // ---------------------------------------------------------------------------------
       if (user.active === false) {
+        logger.log('fatal', `** ${email} login attempt on inactive user`)
+        logger.log('fatal', `** rejected request with 422`)
         return res.status(422).json({
           errors: [{
             location: 'body',
@@ -69,7 +73,10 @@ router.post('/', [
             if (!rememberMe) signOptions.expiresIn = '12h'
 
             let token = jwt.sign(payload, secret, signOptions)
-
+            logger.log('debug', `** ${email} is successfully authenticated`)
+            logger.log('debug', `** rememberMe set to ${rememberMe}`)
+            logger.log('debug', `** successfully generated token`)
+            logger.log('debug', `** successfully delivered response`)
             res.send(
               present({
                 resource: 'users',
@@ -81,6 +88,8 @@ router.post('/', [
             // ---------------------------------------------------------------------------
             // ** FAILED LOGIN ATTEMPT **
             // ---------------------------------------------------------------------------
+            logger.log('fatal', `** failed login attempt ${email}`)
+            logger.log('fatal', `** rejected request with 422`)
             return res.status(422).json({
               errors: [{
                 location: 'body',
@@ -94,7 +103,9 @@ router.post('/', [
         // if there was an error checking the password
         // -------------------------------------------------------------------------------
         .catch(err => {
-          console.log(err)
+          logger.log('fatal', `** error checking the password`)
+          logger.log('fatal', `** error ${err}`)
+          logger.log('fatal', `** rejected request with 422`)
           return res.status(422).json({
             errors: [{
               location: 'body',
@@ -108,7 +119,9 @@ router.post('/', [
     // if there was an error looking up the user, or if the email doesnt exist
     // -----------------------------------------------------------------------------------
     .catch(err => {
-      console.log(err)
+      logger.log('fatal', `** error looking up ${email}`)
+      logger.log('fatal', `** error ${err}`)
+      logger.log('fatal', `** rejected request with 422`)
       return res.status(422).json({
         errors: [{
           location: 'body',

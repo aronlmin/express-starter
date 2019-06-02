@@ -9,6 +9,7 @@ const mongoose = require('mongoose')
 const User = mongoose.model('User')
 const moment = require('moment')
 const _ = require('lodash')
+const logger = require('../lib/logger')
 
 router.post('/', [
   body('firstName')
@@ -37,6 +38,9 @@ router.post('/', [
 ], (req, res) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
+    logger.log('warn', `** failed registration with validation errors`)
+    logger.log('warn', `** error ${JSON.stringify(errors.array({ onlyFirstError: true }))}`)
+    logger.log('warn', `** rejected request with 422`)
     return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) })
   }
 
@@ -76,6 +80,9 @@ router.post('/', [
   }
 
   if (preModelErrors.length > 0) {
+    logger.log('warn', `** failed registration with preModelErrors`)
+    logger.log('warn', `** error ${JSON.stringify(preModelErrors)}`)
+    logger.log('warn', `** rejected request with 422`)
     return res.status(422).json({ errors: preModelErrors })
   }
 
@@ -100,6 +107,8 @@ router.post('/', [
       // ---------------------------------------------------------------------------------
       // send the json response
       // ---------------------------------------------------------------------------------
+      logger.log('debug', `** ${email} is successfully registered`)
+      logger.log('debug', `** successfully delivered response`)
       res.send(
         present({
           resource: 'users',
@@ -109,8 +118,14 @@ router.post('/', [
     })
     .catch(error => {
       if (error.name === 'ValidationError') {
+        logger.log('warn', `** failed registration with ValidationError`)
+        logger.log('warn', `** error ${JSON.stringify(error)}`)
+        logger.log('warn', `** rejected request with 422`)
         return res.status(422).json(error)
       } else if (error.name === 'MongoError' && error.code === 11000) {
+        logger.log('warn', `** failed registration with MongoError`)
+        logger.log('warn', `** error email is already taken`)
+        logger.log('warn', `** rejected request with 422`)
         return res.status(422).json({
           errors: [{
             location: 'body',
@@ -119,6 +134,9 @@ router.post('/', [
           }]
         })
       } else {
+        logger.log('fatal', `** failed registration an anonymous error`)
+        logger.log('fatal', `** error ${JSON.stringify(error)}`)
+        logger.log('fatal', `** rejected request with 500`)
         return res.status(500).json(error)
       }
     })
