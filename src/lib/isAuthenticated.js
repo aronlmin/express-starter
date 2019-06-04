@@ -58,12 +58,54 @@ module.exports = (req, res, next) => {
           User.findOne({ email: { $regex: new RegExp(decoded.email.trim(), 'i') } })
             .then(user => {
               // -------------------------------------------------------------------------
+              // ** CHECK FOR LOCKOUT **
+              // -------------------------------------------------------------------------
+              if (user.lockout) {
+                logger.log('warn', `** ${decoded.email} account is locked out`)
+                logger.log('warn', `** ${decoded.email} rejected request with 401`)
+                return res.status(401).json({
+                  errors: [{
+                    location: 'header',
+                    param: 'Authorization',
+                    msg: 'missing or invalid'
+                  }]
+                })
+              }
+              // -------------------------------------------------------------------------
+              // ** CHECK FOR INACTIVE **
+              // -------------------------------------------------------------------------
+              if (user.active === false) {
+                logger.log('warn', `** ${decoded.email} account is no longer active`)
+                logger.log('warn', `** ${decoded.email} rejected request with 401`)
+                return res.status(401).json({
+                  errors: [{
+                    location: 'header',
+                    param: 'Authorization',
+                    msg: 'missing or invalid'
+                  }]
+                })
+              }
+              // -------------------------------------------------------------------------
               // ** SET USER AND GO NEXT **
               // -------------------------------------------------------------------------
-              req.user = user
-              logger.log('debug', `** ${decoded.email} set user to local request object`)
-              logger.log('debug', `** ${decoded.email} moving on to route controller`)
-              next()
+              user.lastActivity = moment().toDate()
+              user.save()
+                .then(() => {
+                  req.user = user
+                  logger.log('debug', `** ${decoded.email} set user to local request object`)
+                  logger.log('debug', `** ${decoded.email} moving on to route controller`)
+                  next()
+                })
+                .catch(error => {
+                  logger.log('fatal', `** failed to update lastActivity`)
+                  logger.log('fatal', `** error ${JSON.stringify(error)}`)
+                  logger.log('fatal', `** rejected request with 500`)
+                  return res.status(500).json({
+                    errors: [{
+                      err: 'your token was valid, but there was a fatal error on the server'
+                    }]
+                  })
+                })
             })
             .catch(err => {
               logger.log('fatal', `** ${decoded.email} failed to get user from the database`)

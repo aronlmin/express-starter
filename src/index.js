@@ -52,8 +52,15 @@ app.use('/', require('./routes'))
 
 const port = process.env.PORT || '4000'
 server.listen(port, () => {
-  logger.log('info', `Successfully Started Express Server`)
-  logger.log('info', `Environment: ${process.env.NODE_ENV || 'development'}`)
-  logger.log('info', `Node Version: ${process.version}`)
-  logger.log('info', `Listening on: tcp://localhost:${port}`)
+  logger.log('debug', `** Successfully Started Express Server`)
+  logger.log('debug', `** Environment: ${process.env.NODE_ENV || 'development'}`)
+  logger.log('debug', `** Node Version: ${process.version}`)
+  logger.log('debug', `** Listening on: tcp://localhost:${port}`)
 })
+
+function stop () {
+  server.close()
+}
+
+module.exports = app
+module.exports.stop = stop

@@ -6,6 +6,7 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
+    "chai-http": "^4.3.0",
     "cors": "^2.8.5",
     "dotenv": "^8.0.0",
     "express": "^4.17.0",
@@ -18,15 +19,26 @@
     "mongoose": "^5.5.12",
     "mongoose-paginate": "^5.0.3",
     "morgan": "^1.9.1",
+    "nyc": "^14.1.1",
     "rotating-file-stream": "^1.4.1",
     "winston": "^3.2.1"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "NODE_ENV=test PORT=4001 nyc mocha --recursive --exit ",
     "run": "node ./src/index.js",
     "nodemon": "nodemon ./src/index.js",
     "start": "nodemon ./src/index.js",
     "build": "npm install",
     "dev": "nodemon ./src/index.js"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.1.4"
+  },
+  "standard": {
+    "env": [
+      "mocha",
+      "chai"
+    ]
   }
 }

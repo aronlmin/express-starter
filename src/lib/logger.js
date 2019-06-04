@@ -9,6 +9,23 @@ const myFormat = printf(({ level, message, label, timestamp }) => {
   return `[${timestamp}] ${level.toUpperCase()}${padding} - ${label} - ${JSON.stringify(message)}`
 })
 
+let level = 'debug'
+let silent = false
+switch (process.env.NODE_ENV) {
+  case 'production':
+    level = 'warn'
+    silent = false
+    break
+  case 'test':
+    level = 'error'
+    silent = true
+    break
+  default:
+    level = 'debug'
+    silent = false
+    break
+}
+
 const logger = createLogger({
   format: combine(
     label({ label: process.env.DBNAME }),
@@ -16,8 +33,8 @@ const logger = createLogger({
     myFormat
   ),
   transports: [
-    new transports.Console({ level: 'debug' }),
-    new transports.File({ level: 'debug', filename: './src/log/debug.log' })
+    new transports.Console({ silent: silent, level: level }),
+    new transports.File({ silent: silent, level: level, filename: './src/log/debug.log' })
   ]
 })
 

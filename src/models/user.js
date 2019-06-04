@@ -32,6 +32,7 @@ const UserSchema = new mongoose.Schema({
   },
   active: { type: Boolean, default: true },
   lastActivity: { type: Date },
+  lastLogin: { type: Date },
   lockout: { type: Boolean, default: false },
   failedLogins: { type: Number, default: 0 },
   lockoutUntil: { type: Date, default: null }
