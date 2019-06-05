@@ -17,8 +17,8 @@ router.get('/', (req, res) => {
   )
 })
 
-router.use('/register', require('./register'))
-router.use('/auth', require('./auth'))
+router.use('/register', require('./registerRoutes'))
+router.use('/auth', require('./authRoutes'))
 
 router.use((err, req, res, next) => {
   if (err.name === 'ValidationError') {

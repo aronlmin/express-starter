@@ -45,7 +45,7 @@ const options = {
 }
 mongoose.connect(uri, options)
 if (!isProduction) mongoose.set('debug', true)
-require('./models/User')
+require('./models/userModel')
 
 // require routes
 app.use('/', require('./routes'))
@@ -58,9 +58,5 @@ server.listen(port, () => {
   logger.log('debug', `** Listening on: tcp://localhost:${port}`)
 })
 
-function stop () {
-  server.close()
-}
-
 module.exports = app
-module.exports.stop = stop
+module.exports.stop = () => server.close()
