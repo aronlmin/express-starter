@@ -6,7 +6,7 @@ const moment = require('moment')
 // follow the RESTED NARWHL API pattern
 // https://www.narwhl.com/resource-specific-responses
 // ---------------------------------------------------------------------------------------
-module.exports = (payload, req, res) => {
+module.exports = (req, res, payload) => {
   try {
     let data = []
     if (payload.token) data.push({ token: payload.token })

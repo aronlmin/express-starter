@@ -96,11 +96,11 @@ module.exports = {
                   logger.log('debug', `[authController] ** ${email} is successfully authenticated`)
                   logger.log('debug', `[authController] ** rememberMe boolean provided was set to ${rememberMe}`)
                   logger.log('debug', `[authController] ** successfully generated token`)
-                  present({
+                  present(req, res, {
                     resource: 'users',
                     data: [user.entity(user, zoom)],
                     token: token
-                  }, req, res)
+                  })
                 })
                 .catch(err => {
                   logger.log('fatal', `[authController] ** ${email} failed to update user activity`)

@@ -69,10 +69,10 @@ module.exports = {
 
         // send the json response
         logger.log('debug', `[registerController] ** ${email} is successfully registered`)
-        present({
+        present(req, res, {
           resource: 'users',
           data: [user.entity(user, zoom)]
-        }, req, res)
+        })
       })
       .catch(error => {
         if (error.name === 'ValidationError') {
