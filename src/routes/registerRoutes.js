@@ -3,7 +3,7 @@
 const express = require('express')
 const router = express.Router()
 const { body, query, validationResult } = require('express-validator/check')
-const logger = require('../lib/logger')
+const raiseParamErrors = require('../lib/raiseParamErrors')
 
 const { register } = require('../controllers/registerController')
 
@@ -33,12 +33,7 @@ router.post('/', [
     .isString()
 ], (req, res) => {
   const errors = validationResult(req)
-  if (!errors.isEmpty()) {
-    logger.log('warn', `** failed registration with validation errors`)
-    logger.log('warn', `** error ${JSON.stringify(errors.array({ onlyFirstError: true }))}`)
-    logger.log('warn', `** rejected request with 422`)
-    return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) })
-  }
+  if (!errors.isEmpty()) raiseParamErrors(res, errors)
 
   register(req, res)
 })

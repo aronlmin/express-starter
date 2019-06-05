@@ -3,8 +3,8 @@
 const express = require('express')
 const router = express.Router()
 const { body, query, validationResult } = require('express-validator/check')
-const logger = require('../lib/logger')
 const { authenticate } = require('../controllers/authController')
+const raiseParamErrors = require('../lib/raiseParamErrors')
 
 router.post('/', [
   body('email')
@@ -22,12 +22,7 @@ router.post('/', [
     .isString()
 ], (req, res) => {
   const errors = validationResult(req)
-  if (!errors.isEmpty()) {
-    logger.log('warn', `** failed login with validation errors`)
-    logger.log('warn', `** error ${errors}`)
-    logger.log('warn', `** rejected request with 422`)
-    return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) })
-  }
+  if (!errors.isEmpty()) raiseParamErrors(res, errors)
   authenticate(req, res)
 })
 

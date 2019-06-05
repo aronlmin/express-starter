@@ -21,10 +21,10 @@ const logger = require('./lib/logger')
 app.use(device.capture())
 app.use((req, res, next) => {
   req.start = moment()
-  logger.log('info', `${req.originalUrl}`)
-  logger.log('debug', `** Device Type ${req.device.type}`)
-  logger.log('debug', `** Device Name ${req.device.name ? req.device.name : 'n/a'}`)
-  logger.log('debug', `** IP Address ${req.ip} / ${req.ips}`)
+  logger.log('info', `[appEntry] ${req.originalUrl}`)
+  logger.log('debug', `[appEntry] ** Device Type ${req.device.type}`)
+  logger.log('debug', `[appEntry] ** Device Name ${req.device.name ? req.device.name : 'n/a'}`)
+  logger.log('debug', `[appEntry] ** IP Address ${req.ip} / ${req.ips}`)
   next()
 })
 let accessLogStream = rfs('access.log', {
@@ -52,10 +52,10 @@ app.use('/', require('./routes'))
 
 const port = process.env.PORT || '4000'
 server.listen(port, () => {
-  logger.log('debug', `** Successfully Started Express Server`)
-  logger.log('debug', `** Environment: ${process.env.NODE_ENV || 'development'}`)
-  logger.log('debug', `** Node Version: ${process.version}`)
-  logger.log('debug', `** Listening on: tcp://localhost:${port}`)
+  logger.log('debug', `[appEntry] ** Successfully Started Express Server`)
+  logger.log('debug', `[appEntry] ** Environment: ${process.env.NODE_ENV || 'development'}`)
+  logger.log('debug', `[appEntry] ** Node Version: ${process.version}`)
+  logger.log('debug', `[appEntry] ** Listening on: tcp://localhost:${port}`)
 })
 
 module.exports = app
