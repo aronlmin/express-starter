@@ -1,6 +1,6 @@
 'use strict'
 
-const app = require('../../src/index')
+const app = require('../../../src/index')
 const chai = require('chai')
 const chaiHttp = require('chai-http')
 
@@ -11,12 +11,12 @@ after(async () => {
   app.stop()
 })
 
-describe('/register', () => {
-  it('POST /register should return a 422 response', (done) => {
+describe('/auth', () => {
+  it('POST /auth should return a 422 response', (done) => {
     chai.request(app)
-      .post('/register', {
+      .post('/auth', {
         email: 'random@email',
-        password: null
+        password: 'test'
       })
       .end((err, res) => {
         if (err) {}
