@@ -68,25 +68,11 @@ module.exports = {
         console.log('send registration confirmation email')
 
         // send the json response
-        try {
-          logger.log('debug', `[registerController] ** ${email} is successfully registered`)
-          res.send(present({
-            resource: 'users',
-            startTimestamp: req.start.toDate(),
-            data: [user.entity(user, zoom)]
-          }))
-        } catch (error) {
-          logger.log('fatal', `[registerController] ** present method error`)
-          logger.log('fatal', `[registerController] ** error ${JSON.stringify(error)}`)
-          logger.log('fatal', `[registerController] ** rejected request with 500`)
-          return res.status(500).json({
-            errors: [{
-              location: 'n/a',
-              param: 'n/a',
-              msg: 'something happened when generating the response'
-            }]
-          })
-        }
+        logger.log('debug', `[registerController] ** ${email} is successfully registered`)
+        present(req, res, {
+          resource: 'users',
+          data: [user.entity(user, zoom)]
+        })
       })
       .catch(error => {
         if (error.name === 'ValidationError') {

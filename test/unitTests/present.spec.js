@@ -1,8 +1,10 @@
+'use strict'
+
 const moment = require('moment')
-const present = require('../../src/lib/present')
+const present = require('../../src/lib/present/present')
 
 describe('unit test the present lib method', () => {
-  it('should return the expected shape', (done) => {
+  it('should return the expected shape', done => {
     const shape = present({
       resource: 'empty_array',
       startTimestamp: moment().toDate(),

@@ -31,8 +31,8 @@ const UserSchema = new mongoose.Schema({
     required: [true, "password can't be blank"]
   },
   active: { type: Boolean, default: true },
-  lastActivity: { type: Date },
-  lastLogin: { type: Date },
+  lastActivity: { type: Date, default: null },
+  lastLogin: { type: Date, default: null },
   lockout: { type: Boolean, default: false },
   failedLogins: { type: Number, default: 0 },
   lockoutUntil: { type: Date, default: null }

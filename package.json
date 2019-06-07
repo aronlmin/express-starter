@@ -22,7 +22,7 @@
     "winston": "^3.2.1"
   },
   "scripts": {
-    "test": "NODE_ENV=test PORT=4001 mocha --recursive --exit ",
+    "test": "NODE_ENV=test PORT=4001 nyc mocha --recursive --exit ",
     "run": "node ./src/index.js",
     "nodemon": "nodemon ./src/index.js",
     "start": "nodemon ./src/index.js",
@@ -33,6 +33,7 @@
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
     "mocha": "^6.1.4",
+    "nyc": "^14.1.1",
     "sinon": "^7.3.2",
     "sinon-chai": "^3.3.0",
     "sinon-express-mock": "^2.2.0"

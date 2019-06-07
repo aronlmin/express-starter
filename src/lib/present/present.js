@@ -1,7 +1,8 @@
 'use strict'
 
-const logger = require('./logger')
+const logger = require('../logger')
 const moment = require('moment')
+
 // ---------------------------------------------------------------------------------------
 // follow the RESTED NARWHL API pattern
 // https://www.narwhl.com/resource-specific-responses

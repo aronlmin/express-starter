@@ -97,26 +97,12 @@ module.exports = {
                   logger.log('debug', `[authController] ** rememberMe boolean provided was set to ${rememberMe}`)
                   logger.log('debug', `[authController] ** successfully generated token`)
                   // send the json response
-                  try {
-                    logger.log('debug', `[authController] ** ${email} is successfully registered`)
-                    res.send(present({
-                      resource: 'users',
-                      startTimestamp: req.start.toDate(),
-                      data: [user.entity(user, zoom)],
-                      token: token
-                    }))
-                  } catch (error) {
-                    logger.log('fatal', `[authController] ** present method error`)
-                    logger.log('fatal', `[authController] ** error ${JSON.stringify(error)}`)
-                    logger.log('fatal', `[authController] ** rejected request with 500`)
-                    return res.status(500).json({
-                      errors: [{
-                        location: 'n/a',
-                        param: 'n/a',
-                        msg: 'something happened when generating the response'
-                      }]
-                    })
-                  }
+                  logger.log('debug', `[authController] ** ${email} is successfully registered`)
+                  present(req, res, {
+                    resource: 'users',
+                    data: [user.entity(user, zoom)],
+                    token: token
+                  })
                 })
                 .catch(err => {
                   logger.log('fatal', `[authController] ** ${email} failed to update user activity`)

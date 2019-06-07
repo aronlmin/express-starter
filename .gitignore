@@ -26,3 +26,4 @@ yarn-debug.log*
 yarn-error.log*
 Golf2.0.paw
 /src/log/*
+/.nyc_output
