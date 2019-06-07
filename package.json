@@ -23,6 +23,7 @@
   },
   "scripts": {
     "test": "NODE_ENV=test PORT=4001 nyc mocha --recursive --exit ",
+    "test-again": "nodemon --exec yarn run test",
     "run": "node ./src/index.js",
     "nodemon": "nodemon ./src/index.js",
     "start": "nodemon ./src/index.js",

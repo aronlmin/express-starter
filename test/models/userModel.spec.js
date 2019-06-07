@@ -1,6 +1,6 @@
 'use strict'
 
-require('../../../src/models')
+require('../../src/models')
 const mongoose = require('mongoose')
 const User = mongoose.model('User')
 const moment = require('moment')

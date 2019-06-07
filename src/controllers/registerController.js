@@ -65,7 +65,7 @@ module.exports = {
     user.save()
       .then(() => {
         // send registration confirmation email
-        console.log('send registration confirmation email')
+        // console.log('send registration confirmation email')
 
         // send the json response
         logger.log('debug', `[registerController] ** ${email} is successfully registered`)

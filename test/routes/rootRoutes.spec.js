@@ -1,6 +1,6 @@
 'use strict'
 
-const app = require('../../../src/index')
+const app = require('../../src/index')
 const chai = require('chai')
 const chaiHttp = require('chai-http')
 

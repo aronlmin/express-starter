@@ -1,10 +1,7 @@
 'use strict'
 
 const isProduction = require('./lib/isProduction')
-
-if (isProduction) require('dotenv').config({ path: './.env.production' })
-if (!isProduction) require('dotenv').config({ path: './.env.development' })
-
+require('dotenv').config({ path: isProduction ? './.env.production' : './.env.development' })
 const express = require('express')
 const app = express()
 const server = require('http').Server(app)
