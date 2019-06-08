@@ -13,7 +13,9 @@ const rfs = require('rotating-file-stream')
 const path = require('path')
 const device = require('express-device')
 const logger = require('./lib/logger')
+const compression = require('compression')
 
+app.use(compression())
 app.use(device.capture())
 app.use((req, res, next) => {
   req.start = moment()
@@ -39,10 +41,10 @@ require('./models')
 // require routes
 app.use('/', require('./routes'))
 
-const port = process.env.PORT || '4000'
+const port = process.env.PORT
 server.listen(port, () => {
   logger.log('debug', `[appEntry] ** Successfully Started Express Server`)
-  logger.log('debug', `[appEntry] ** Environment: ${process.env.NODE_ENV || 'development'}`)
+  logger.log('debug', `[appEntry] ** Environment: ${process.env.NODE_ENV}`)
   logger.log('debug', `[appEntry] ** Node Version: ${process.version}`)
   logger.log('debug', `[appEntry] ** Listening on: tcp://localhost:${port}`)
 })

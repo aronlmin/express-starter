@@ -8,41 +8,50 @@ const logger = require('../lib/logger')
 const moment = require('moment')
 const present = require('../lib/present')
 
-const error422 = (res) => {
-  logger.log('fatal', `[authController] ** rejected request with 422`)
-  return res.status(422).json({
-    errors: [{
-      location: 'body',
-      param: 'email/password',
-      msg: 'invalid'
-    }]
-  })
+const error422 = () => {
+  logger.log('error', `[authController] ** rejected request with 422`)
+  return {
+    code: 422,
+    error: {
+      errors: [{
+        location: 'body',
+        param: 'email/password',
+        msg: 'invalid'
+      }]
+    }
+  }
 }
 
-const error401 = (res, user) => {
-  logger.log('fatal', `[authController] ** rejected request with 401`)
-  return res.status(401).json({
-    errors: [{
-      location: 'body',
-      param: 'email/password',
-      msg: `${moment(user.lockoutUntil).fromNow().replace('in ', '')} remaining on lockout`
-    }]
-  })
+const error401 = (user) => {
+  logger.log('error', `[authController] ** rejected request with 401`)
+  return {
+    code: 401,
+    error: {
+      errors: [{
+        location: 'body',
+        param: 'email/password',
+        msg: `${moment(user.lockoutUntil).fromNow().replace('in ', '')} remaining on lockout`
+      }]
+    }
+  }
 }
 
-const error500 = (res) => {
-  logger.log('fatal', `[authController] ** rejected request with 500`)
-  return res.status(500).json({
-    errors: [{
-      location: 'body',
-      param: 'email/password',
-      msg: 'your login attempt was successfull, but there was a fatal error on the server'
-    }]
-  })
+const error500 = () => {
+  logger.log('error', `[authController] ** rejected request with 500`)
+  return {
+    code: 500,
+    error: {
+      errors: [{
+        location: 'body',
+        param: 'email/password',
+        msg: 'your login attempt was successfull, but there was a fatal error on the server'
+      }]
+    }
+  }
 }
 
 module.exports = {
-  authenticate: (req, res) => {
+  authenticate: (req, res, next) => {
     let { email, password, rememberMe } = req.body
     let { zoom } = req.query
 
@@ -50,20 +59,20 @@ module.exports = {
       .then(user => {
         // return error if the user is not active
         if (user.active === false) {
-          logger.log('fatal', `[authController] ** ${email} login attempt on inactive user`)
-          error422(res)
+          logger.log('error', `[authController] ** ${email} login attempt on inactive user`)
+          return next(error422())
         }
 
         // ** IF THE USER IS LOCKED OUT **
         if (user.lockout) {
-          logger.log('fatal', `[authController] ** ${email} login attempt on a locked out user`)
-          error422(res)
+          logger.log('error', `[authController] ** ${email} login attempt on a locked out user`)
+          return next(error422())
         }
 
         // ** IF THE USER LOCKOUT UNTIL IS SET **
         if (user.lockoutUntil && user.lockoutUntil > moment().toDate()) {
-          logger.log('fatal', `[authController] ** ${email} login attempt ${moment(user.lockoutUntil).fromNow().replace('in ', '')} remaining on lockout`)
-          error401(res, user)
+          logger.log('error', `[authController] ** ${email} login attempt ${moment(user.lockoutUntil).fromNow().replace('in ', '')} remaining on lockout`)
+          return next(error401(user))
         }
 
         // check if the password is correct
@@ -105,9 +114,9 @@ module.exports = {
                   })
                 })
                 .catch(err => {
-                  logger.log('fatal', `[authController] ** ${email} failed to update user activity`)
-                  logger.log('fatal', `[authController] ** error ${JSON.stringify(err)}`)
-                  error500(res)
+                  logger.log('error', `[authController] ** ${email} failed to update user activity`)
+                  logger.log('error', `[authController] ** error ${JSON.stringify(err)}`)
+                  return next(error500())
                 })
             } else {
               // ** FAILED LOGIN ATTEMPT **
@@ -125,45 +134,45 @@ module.exports = {
                 .then(() => {
                   // tell the client how long he is locked out for
                   if (user.lockout === false && user.failedLogins >= 5) {
-                    logger.log('fatal', `[authController] ** ${email} login attempt ${moment(user.lockoutUntil).fromNow().replace('in ', '')} remaining on lockout`)
-                    error401(res, user)
+                    logger.log('error', `[authController] ** ${email} login attempt ${moment(user.lockoutUntil).fromNow().replace('in ', '')} remaining on lockout`)
+                    return next(error401(user))
                   }
 
                   // give the client an anonymous invalid username/password error
                   if (user.lockout === false && user.failedLogins < 5) {
-                    logger.log('fatal', `[authController] ** ${email} failed login attempt ${user.failedLogins}`)
-                    error422(res)
+                    logger.log('error', `[authController] ** ${email} failed login attempt ${user.failedLogins}`)
+                    return next(error422())
                   }
 
                   // give the user an anonymous invalid username/password because
                   // the user is officially locked out permanently
                   if (user.lockout) {
-                    logger.log('fatal', `[authController] ** ${email} failed login attempt, locked`)
-                    error422(res)
+                    logger.log('error', `[authController] ** ${email} failed login attempt, locked`)
+                    return next(error422())
                   }
                 })
                 .catch(err => {
-                  logger.log('fatal', `[authController] ** ${email} failed to update user failed logins`)
-                  logger.log('fatal', `[authController] ** error ${JSON.stringify(err)}`)
-                  error422(res)
+                  logger.log('error', `[authController] ** ${email} failed to update user failed logins`)
+                  logger.log('error', `[authController] ** error ${JSON.stringify(err)}`)
+                  return next(error422())
                 })
               // ** RETURN FAILED LOGIN ATTEMPT ERROR **
-              logger.log('fatal', `[authController] ** ${email} failed login attempt`)
-              error422(res)
+              logger.log('error', `[authController] ** ${email} failed login attempt`)
+              return next(error422())
             }
           })
           // if there was an error checking the password
           .catch(err => {
-            logger.log('fatal', `[authController] ** error checking the password`)
-            logger.log('fatal', `[authController] ** error ${err}`)
-            error422(res)
+            logger.log('error', `[authController] ** error checking the password`)
+            logger.log('error', `[authController] ** error ${err}`)
+            return next(error422())
           })
       })
       // if there was an error looking up the user, or if the email doesnt exist
       .catch(err => {
-        logger.log('fatal', `[authController] ** error looking up ${email}`)
-        logger.log('fatal', `[authController] ** error ${err}`)
-        error422(res)
+        logger.log('error', `[authController] ** error looking up ${email}`)
+        logger.log('error', `[authController] ** error ${err}`)
+        return next(error422())
       })
   }
 }

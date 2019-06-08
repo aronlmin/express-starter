@@ -15,7 +15,7 @@ after(async () => {
   app.stop()
 })
 
-describe('/auth', () => {
+describe('Authentication Route', () => {
   it('creates a user', done => {
     chai.request(app)
       .post('/register')
@@ -24,6 +24,45 @@ describe('/auth', () => {
       .end((err, res) => {
         if (err) {}
         res.should.have.status(200)
+        done()
+      })
+  })
+
+  it('rejects invalid email format', done => {
+    chai.request(app)
+      .post('/auth')
+      .set('content-type', 'application/json')
+      .send({
+        email: mockUser.email.replace('@', ''),
+        password: mockUser.password
+      })
+      .end((err, res) => {
+        if (err) {}
+        res.should.have.status(422)
+        expect(res.body.errors).to.be.an.instanceof(Array)
+        let msg = res.body.errors[0]
+        expect(msg.location).to.equal('body')
+        expect(msg.value).to.equal(mockUser.email.replace('@', ''))
+        expect(msg.msg).to.equal('invalid email format')
+        done()
+      })
+  })
+  it('rejects invalid password', done => {
+    chai.request(app)
+      .post('/auth')
+      .set('content-type', 'application/json')
+      .send({
+        email: mockUser.email,
+        password: 'madeUpPassWord'
+      })
+      .end((err, res) => {
+        if (err) {}
+        res.should.have.status(422)
+        expect(res.body.errors).to.be.an.instanceof(Array)
+        let msg = res.body.errors[0]
+        expect(msg.location).to.equal('body')
+        expect(msg.param).to.equal('email/password')
+        expect(msg.msg).to.equal('invalid')
         done()
       })
   })

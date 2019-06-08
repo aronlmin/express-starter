@@ -12,9 +12,9 @@ module.exports = (req, res, payload) => {
     payload.startTimestamp = req.start.toDate()
     res.send(presentObject(payload))
   } catch (error) {
-    logger.log('fatal', `[authController] ** present method error`)
-    logger.log('fatal', `[authController] ** error ${JSON.stringify(error)}`)
-    logger.log('fatal', `[authController] ** rejected request with 500`)
+    logger.log('error', `[authController] ** present method error`)
+    logger.log('error', `[authController] ** error ${JSON.stringify(error)}`)
+    logger.log('error', `[authController] ** rejected request with 500`)
     return res.status(500).json({
       errors: [{
         location: 'n/a',

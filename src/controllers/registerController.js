@@ -9,7 +9,7 @@ const _ = require('lodash')
 const logger = require('../lib/logger')
 
 module.exports = {
-  register: (req, res) => {
+  register: (req, res, next) => {
     let { firstName, lastName, email, password } = req.body
     let { zoom } = req.query
 
@@ -49,7 +49,12 @@ module.exports = {
       logger.log('warn', `[registerController] ** failed registration with preModelErrors`)
       logger.log('warn', `[registerController] ** error ${JSON.stringify(preModelErrors)}`)
       logger.log('warn', `[registerController] ** rejected request with 422`)
-      return res.status(422).json({ errors: preModelErrors })
+      return next({
+        code: 422,
+        error: {
+          errors: preModelErrors
+        }
+      })
     }
 
     // save the user the database
@@ -79,23 +84,32 @@ module.exports = {
           logger.log('warn', `[registerController] ** failed registration with ValidationError`)
           logger.log('warn', `[registerController] ** error ${JSON.stringify(error)}`)
           logger.log('warn', `[registerController] ** rejected request with 422`)
-          return res.status(422).json(error)
+          return next({
+            code: 422,
+            error: error
+          })
         } else if (error.name === 'MongoError' && error.code === 11000) {
           logger.log('warn', `[registerController] ** failed registration with MongoError`)
           logger.log('warn', `[registerController] ** error email is already taken`)
           logger.log('warn', `[registerController] ** rejected request with 422`)
-          return res.status(422).json({
-            errors: [{
-              location: 'body',
-              param: 'email',
-              msg: 'email is already taken'
-            }]
+          return next({
+            code: 422,
+            error: {
+              errors: [{
+                location: 'body',
+                param: 'email',
+                msg: 'email is already taken'
+              }]
+            }
           })
         } else {
-          logger.log('fatal', `[registerController] ** failed registration an anonymous error`)
-          logger.log('fatal', `[registerController] ** error ${JSON.stringify(error)}`)
-          logger.log('fatal', `[registerController] ** rejected request with 500`)
-          return res.status(500).json(error)
+          logger.log('error', `[registerController] ** failed registration an anonymous error`)
+          logger.log('error', `[registerController] ** error ${JSON.stringify(error)}`)
+          logger.log('error', `[registerController] ** rejected request with 500`)
+          return next({
+            code: 500,
+            error: error
+          })
         }
       })
   }

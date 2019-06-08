@@ -20,6 +20,10 @@ switch (process.env.NODE_ENV) {
     level = 'error'
     silent = true
     break
+  case 'debug':
+    level = 'debug'
+    silent = false
+    break
   default:
     level = 'debug'
     silent = false

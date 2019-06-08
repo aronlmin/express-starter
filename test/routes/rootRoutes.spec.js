@@ -12,7 +12,7 @@ after(async () => {
   app.stop()
 })
 
-describe('/', () => {
+describe('Root Route', () => {
   it('GET / should return a 200 response', (done) => {
     chai.request(app)
       .get('/')

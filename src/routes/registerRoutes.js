@@ -31,11 +31,13 @@ router.post('/', [
   query('zoom')
     .optional()
     .isString()
-], (req, res) => {
+], (req, res, next) => {
   const errors = validationResult(req)
-  if (!errors.isEmpty()) raiseParamErrors(res, errors)
-
-  register(req, res)
+  if (!errors.isEmpty()) {
+    raiseParamErrors(res, errors)
+  } else {
+    register(req, res, next)
+  }
 })
 
 module.exports = router

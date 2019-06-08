@@ -97,9 +97,9 @@ module.exports = (req, res, next) => {
                   next()
                 })
                 .catch(error => {
-                  logger.log('fatal', `** failed to update lastActivity`)
-                  logger.log('fatal', `** error ${JSON.stringify(error)}`)
-                  logger.log('fatal', `** rejected request with 500`)
+                  logger.log('error', `** failed to update lastActivity`)
+                  logger.log('error', `** error ${JSON.stringify(error)}`)
+                  logger.log('error', `** rejected request with 500`)
                   return res.status(500).json({
                     errors: [{
                       err: 'your token was valid, but there was a fatal error on the server'
@@ -108,8 +108,8 @@ module.exports = (req, res, next) => {
                 })
             })
             .catch(err => {
-              logger.log('fatal', `** ${decoded.email} failed to get user from the database`)
-              logger.log('fatal', `** ${decoded.email} rejected request with 500`)
+              logger.log('error', `** ${decoded.email} failed to get user from the database`)
+              logger.log('error', `** ${decoded.email} rejected request with 500`)
               return res.status(500).json({
                 errors: [{
                   err: err
@@ -117,8 +117,8 @@ module.exports = (req, res, next) => {
               })
             })
         } else {
-          logger.log('fatal', `** suspicious token found`)
-          logger.log('fatal', `** rejected request with 401`)
+          logger.log('error', `** suspicious token found`)
+          logger.log('error', `** rejected request with 401`)
           return res.status(401).json({
             errors: [{
               location: 'header',

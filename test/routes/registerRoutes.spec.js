@@ -15,7 +15,7 @@ after(async () => {
   app.stop()
 })
 
-describe('/register', () => {
+describe('Registration Route', () => {
   let params = mockUser
 
   it('should create a new user', done => {
@@ -31,7 +31,7 @@ describe('/register', () => {
         done()
       })
   })
-  it('POST /register should prevent duplicate emails', done => {
+  it('should prevent duplicate emails', done => {
     chai.request(app)
       .post('/register')
       .set(params)
