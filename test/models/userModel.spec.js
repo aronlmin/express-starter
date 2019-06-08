@@ -4,7 +4,7 @@ require('../../src/models')
 const mongoose = require('mongoose')
 const User = mongoose.model('User')
 const moment = require('moment')
-const { expect } = require('chai')
+const { expect, assert } = require('chai')
 const bcrypt = require('bcryptjs')
 
 describe('unit tests the User model', () => {
@@ -44,9 +44,25 @@ describe('unit tests the User model', () => {
         expect(entity._embeds).to.not.equal({})
         expect(entity._embeds.lockoutData.failedLogins).to.equal(0)
         expect(entity._embeds.lockoutData.lockout).to.equal(false)
-        expect(entity._embeds.lockoutData.lockoutUntil).to.equal(null)
+        expect(entity._embeds.lockoutData.lockoutUntil).to.equal(null)// DEBUG
 
-        // delete the user
+        done()
+      })
+  })
+  it('validates zoom method', done => {
+    User.findOne({ active: true })
+      .then(user => {
+        let zoom = user.zoom(user, 'lockoutData')
+        expect(zoom.lockoutData).to.be.an.instanceof(Object)
+        expect(zoom.lockoutData.failedLogins).to.be.gte(0)
+        assert.isBoolean(zoom.lockoutData.lockout)
+        expect(zoom.lockoutData).to.have.a.property('lockoutUntil')
+        done()
+      })
+  })
+  it('deletes the user', done => {
+    User.findOne({ email: 'test@user.com' })
+      .then(user => {
         user.remove()
           .then(() => {
             done()
